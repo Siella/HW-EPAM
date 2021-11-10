@@ -8,8 +8,8 @@ Given four lists A, B, C, D of integer values,
 We guarantee, that all A, B, C, D have same length of N where 0 ≤ N ≤ 1000.
 """
 from typing import List
-import itertools
 import numpy as np
+import itertools
 
 
 def check_sum_of_four(a: List[int],
