@@ -13,9 +13,9 @@ import numpy as np
 import itertools
 
 
-def check_sum_of_four(a: List[int], 
-                      b: List[int], 
-                      c: List[int], 
+def check_sum_of_four(a: List[int],
+                      b: List[int],
+                      c: List[int],
                       d: List[int]) -> int:
     K, N = 4, len(a)
     matrix = np.array([a, b, c, d])
