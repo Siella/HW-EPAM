@@ -12,10 +12,10 @@ def test_sample():
                 return os.path.join(root, name)
     sample = find('par_1.txt', os.getcwd())
     assert set(get_longest_diverse_words(sample)) == {
-        'Betrachtung', 'bedenklichen', 'hinausführen',
+        'Betrachtung', 'bedenklichen', 'hinausf\u00fchren',
         'vorgebahnte', 'Waldgang', 'vielmehr', 'verbirgt',
-        'Ausflug', 'hinter', 'gefaßt'}, 'Fail 1'
+        'Ausflug', 'hinter', 'gefa\u00dft'}, 'Fail 1'
     assert get_rarest_char(sample) == 'W', 'Fail 2'
     assert count_punctuation_chars(sample) == 8, 'Fail 3'
     assert count_non_ascii_chars(sample) == 6, 'Fail 4'
-    assert get_most_common_non_ascii_char(sample) == 'ü', 'Fail 5'
+    assert get_most_common_non_ascii_char(sample) == '\u00fc', 'Fail 5'
