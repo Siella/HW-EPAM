@@ -20,7 +20,6 @@ assert val_1 is val_2
 """
 from typing import Callable
 
-
 cache_dict = dict()
 
 
