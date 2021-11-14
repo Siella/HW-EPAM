@@ -17,11 +17,10 @@ assert custom_range(string.ascii_lowercase, 'p', 'g', -2) ==
         ['p', 'n', 'l', 'j', 'h']
 
 """
-from collections.abc import Iterable
-from typing import Any, List
+from typing import Any, List, Sequence
 
 
-def custom_range(iter_object: Iterable[Any],
+def custom_range(iter_object: Sequence[Any],
                  start: Any = None,
                  end: Any = None,
                  step: int = 1) -> List[Any]:
