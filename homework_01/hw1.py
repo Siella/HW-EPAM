@@ -81,9 +81,9 @@ def get_most_common_non_ascii_char(file_path: str) -> str:
     return max(char_dict, key=char_dict.get)
 
 
-# if __name__ == "__main__":
-#     print(get_longest_diverse_words('data.txt'))
-#     print(get_rarest_char('data.txt'))
-#     print(count_punctuation_chars('data.txt'))
-#     print(count_non_ascii_chars('data.txt'))
-#     print(get_most_common_non_ascii_char('data.txt'))
+if __name__ == "__main__":
+    print(get_longest_diverse_words('data.txt'))
+    print(get_rarest_char('data.txt'))
+    print(count_punctuation_chars('data.txt'))
+    print(count_non_ascii_chars('data.txt'))
+    print(get_most_common_non_ascii_char('data.txt'))
