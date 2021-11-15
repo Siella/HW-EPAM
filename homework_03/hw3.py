@@ -14,21 +14,30 @@ assert combinations([1, 2], [3, 4]) == [
     [2, 4],
 ]
 """
-from itertools import chain, combinations
+from itertools import product
 from typing import Any, List
 
 
 def lists_combinations(*args: List[Any]) -> List[List]:
-    n = min(list(map(len, args)))  # in case of different lengths of lists
-    values = list(chain(*args))
-    all_comb = combinations(values, n)
-    exclude_combs = list(chain(*[list(combinations(l_[:n], n))
-                                 for l_ in args]))
-    result = list(filter(lambda x: x not in exclude_combs, all_comb))
-    return list(map(list, result))
+    # n is for case of different lengths of lists
+    K, n = len(args), max(list(map(len, args)))
+    result = []
+    for indices in product(range(n), repeat=K):
+        tmp_result = []
+        to_add = True
+        for i, idx in enumerate(indices):
+            if idx < len(args[i]):
+                tmp_result += [args[i][idx]]
+            else:
+                to_add = False
+                break
+        if to_add:
+            result += [tmp_result]
+    return result
 
 
 if __name__ == '__main__':
     print(lists_combinations([1, 2], [3, 4]))
-    print(lists_combinations([0, 1, 2], [3, 4, 5], [6, 7, 8]))
-    print(lists_combinations([0, 1], [2, 3, 4], [5, 6]))
+    print(lists_combinations([1, 2], [3], [4]))
+    print(lists_combinations([1, 2], [3], [5, 6]))
+    print(lists_combinations([1, 2], [1, 2]))
