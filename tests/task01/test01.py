@@ -1,15 +1,9 @@
-from task01.task01 import f
+from task01.task01 import f, cache_dict
 
 
-def test_f_caching():
-    # counter = 0
-    #
-    # @pytest.mark.parametrize('execution_number', range(3))
-    # def run_multiple_times(execution_number):
-    #     if counter < execution_number:
-    #         sys.stderr.write("1")
-    #         assert f() == '1'
-    #     else:
-    #         assert callable(f())
-    # run_multiple_times(2)
-    pass
+def test_f_caching(capsys, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda _: '1')
+    for i in range(4):
+        f()
+        print(cache_dict)
+    assert f() not in cache_dict
