@@ -1,4 +1,4 @@
-from task01.task01 import f, cache_dict
+from task01.task01 import cache_dict, f
 
 
 def test_f_caching(capsys, monkeypatch):
