@@ -13,24 +13,32 @@ with open("some_file.txt") as fi:
         ...
 
 """
-from typing import Tuple
 
 
-def find_maximum_and_minimum(file_name: str) -> Tuple[int, int]:
+class MinMaxTuple:
+    __slots__ = ('min', 'max')
+
+    def __init__(self):
+        self.min = -1
+        self.max = -1
+
+
+def find_maximum_and_minimum(file_name: str) -> MinMaxTuple:
     first = True
+    values = MinMaxTuple()
     with open(file_name) as f:
         for line in f:
             curr_elem = int(line)
             if first:
-                max_elem = curr_elem
-                min_elem = curr_elem
+                values.max = curr_elem
+                values.min = curr_elem
                 first = False
                 continue
-            if curr_elem > max_elem:
-                max_elem = curr_elem
-            if curr_elem < min_elem:
-                min_elem = curr_elem
+            if curr_elem > values.max:
+                values.max = curr_elem
+            if curr_elem < values.min:
+                values.min = curr_elem
         if first:
             print('An empty file!')
-            return -1, -1
-    return min_elem, max_elem
+            return values.min, values.max
+    return values.min, values.max
