@@ -2,7 +2,7 @@ from homework_04.hw4 import cache
 
 
 def test_cache():
-    def func(a, b):
+    def func(a, b=2):
         return (a ** b) ** 2
 
     cache_func = cache(func)

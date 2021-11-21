@@ -26,10 +26,11 @@ cache_dict = dict()
 def cache(func: Callable) -> Callable:
     global cache_dict
 
-    def access_cache(*args):
-        if args not in cache_dict:
-            cache_dict[args] = func(*args)
-        return cache_dict[args]
+    def access_cache(*args, **kwargs):
+        key = str((args, kwargs))
+        if key not in cache_dict:
+            cache_dict[key] = func(*args, **kwargs)
+        return cache_dict[key]
     return access_cache
 
 
