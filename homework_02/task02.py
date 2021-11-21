@@ -26,6 +26,9 @@ def check_fib(data: Sequence[int]) -> bool:
     """
     Checks whether data is a Fibonacci SUBsequence.
     """
+    if len(data) == 0:
+        print("It's NOT a fib sequence! (Empty data)")
+        return False
     first_element = data[0]
     for n, f_n in enumerate(fib_seq_generator(0)):
         if first_element == f_n:
