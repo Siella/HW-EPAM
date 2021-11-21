@@ -6,17 +6,35 @@ Given a cell with "it's a fib sequence" from slideshow,
 We guarantee, that the given sequence contain >= 0 integers inside.
 
 """
+import math
 from typing import Sequence
 
 
+def binet_formula(n: int):
+    phi = (1 + math.sqrt(5)) / 2
+    return int((phi ** n - (1 - phi) ** n) / (2 * phi - 1))
+
+
+def fib_seq_generator(n: int):
+    while True:
+        yield binet_formula(n)
+        n += 1
+    return
+
+
 def check_fib(data: Sequence[int]) -> bool:
-    if len(data) < 2:
-        print('A sequence should have at least two elements!')
-        return False
-    for n, f_n in enumerate(data[:-2]):
-        f_n1 = data[n+1]
-        f_n2 = data[n+2]
-        if not (f_n == f_n2 - f_n1):
+    """
+    Checks whether data is a Fibonacci SUBsequence.
+    """
+    first_element = data[0]
+    for n, f_n in enumerate(fib_seq_generator(0)):
+        if first_element == f_n:
+            break
+        if n >= len(data):
+            print("It's NOT a fib sequence!")
+            return False
+    for our_elem, true_elem in zip(data, fib_seq_generator(n)):
+        if our_elem != true_elem:
             print("It's NOT a fib sequence!")
             return False
     print("It's a fib sequence!")
