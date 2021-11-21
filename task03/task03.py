@@ -9,6 +9,7 @@ class Filter:
         functions that return True if object in list
         conforms to some criteria
     """
+
     def __init__(self, functions: List[Callable]):
         self.functions = functions
 
@@ -17,6 +18,7 @@ class Filter:
             item for item in data
             if all(i(item) for i in self.functions)
         ]
+
 
 # example of usage:
 # positive_even = Filter(lambda a: a % 2 == 0,
@@ -33,24 +35,29 @@ def make_filter(**keywords):
     filter_funcs = []
     for key, value in keywords.items():
         def keyword_filter_func(dict_):
+            if key not in dict_:
+                return False
             return dict_[key] == value
         filter_funcs.append(keyword_filter_func)
     return Filter(filter_funcs)
 
 
 sample_data = [
-     {
-         "name": "Bill",
-         "last_name": "Gilbert",
-         "occupation": "was here",
-         "type": "person",
-     },
-     {
-         "is_dead": True,
-         "kind": "parrot",
-         "type": "bird",
-         "name": "polly"
-     }
+    {
+        "name": "Bill",
+        "last_name": "Gilbert",
+        "occupation": "was here",
+        "type": "person",
+    },
+    {
+        "is_dead": True,
+        "kind": "parrot",
+        "type": "bird",
+        "name": "polly"
+    },
+    {
+        "name": "polly",  # no key "type"
+    }
 ]
 
 # make_filter(name='polly', type='bird').apply(sample_data)
