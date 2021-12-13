@@ -19,21 +19,8 @@ from typing import Any, List
 
 
 def lists_combinations(*args: List[Any]) -> List[List]:
-    # n is for case of different lengths of lists
-    K, n = len(args), max(list(map(len, args)))
-    result = []
-    for indices in product(range(n), repeat=K):
-        tmp_result = []
-        to_add = True
-        for i, idx in enumerate(indices):
-            if idx < len(args[i]):
-                tmp_result += [args[i][idx]]
-            else:
-                to_add = False
-                break
-        if to_add:
-            result += [tmp_result]
-    return result
+    combinations = [comb for comb in product(*args)]
+    return list(map(list, combinations))
 
 
 if __name__ == '__main__':

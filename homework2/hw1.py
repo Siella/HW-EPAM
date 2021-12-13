@@ -8,13 +8,16 @@ Given a file containing text. Complete using only default collections:
 """
 
 import re
-from typing import Dict, List
+from collections import defaultdict
+from typing import List
 
 
-def read_by_lines(file_path: str) -> str:
-    with open(file_path, 'r', encoding='utf-8') as f:
+def read_by_lines(
+        file_path: str, encoding='unicode-escape', errors='ignore'
+        ) -> str:
+    with open(file_path, 'r', encoding=encoding, errors=errors) as f:
         for line in f:
-            yield bytes(line, "ascii").decode('unicode-escape')
+            yield line
         return
 
 
@@ -22,22 +25,16 @@ def is_non_ascii(char):
     return ord(char) > 126  # without extended
 
 
-# можно было бы использовать Counter из collections, например
-def counter_as_dict(iterable, dict_: Dict):
-    for i in iterable:
-        if i not in dict_:
-            dict_[i] = 0
-        dict_[i] += 1
-
-
-def get_longest_diverse_words(file_path: str) -> List[str]:
+def get_longest_diverse_words(
+        file_path: str, encoding='unicode-escape', errors='ignore'
+        ) -> List[str]:
     def clear_punc_num_chars(word):
         new_word = re.sub(r'[^\w\s]', '', word)
         new_word = re.sub(r'\d+', '', new_word)
         return new_word
     words_dict = dict()  # key is a word, value is a num of unique symbols
     concat_words, last_part = False, ''  # for word wrap cases
-    for line in read_by_lines(file_path):
+    for line in read_by_lines(file_path, encoding, errors):
         new_line = line[:]
         if concat_words:
             new_line = last_part + line
@@ -52,32 +49,41 @@ def get_longest_diverse_words(file_path: str) -> List[str]:
     return sorted(words_dict, key=words_dict.get, reverse=True)[:10]
 
 
-def get_rarest_char(file_path: str) -> str:
-    char_dict = dict()  # key is a char, value is a num of occurrences
-    for line in read_by_lines(file_path):
-        counter_as_dict(line, char_dict)
+def get_rarest_char(
+        file_path: str, encoding='unicode-escape', errors='ignore'
+        ) -> str:
+    char_dict = defaultdict(int)  # key is a char, value - num of occurrences
+    for line in read_by_lines(file_path, encoding, errors):
+        for char in line:
+            char_dict[char] += 1
     return min(char_dict, key=char_dict.get)
 
 
-def count_punctuation_chars(file_path: str) -> int:
+def count_punctuation_chars(
+        file_path: str, encoding='unicode-escape', errors='ignore'
+        ) -> int:
     cnt_punc = 0
-    for line in read_by_lines(file_path):
+    for line in read_by_lines(file_path, encoding, errors):
         cnt_punc += len(line) - len(re.sub(r'[^\w\s]', '', line))
     return cnt_punc
 
 
-def count_non_ascii_chars(file_path: str) -> int:
+def count_non_ascii_chars(
+        file_path: str, encoding='unicode-escape', errors='ignore') -> int:
     cnt_non_ascii = 0
-    for line in read_by_lines(file_path):
+    for line in read_by_lines(file_path, encoding, errors):
         cnt_non_ascii += sum(list(map(is_non_ascii, line)))
     return cnt_non_ascii
 
 
-def get_most_common_non_ascii_char(file_path: str) -> str:
-    char_dict = dict()
-    for line in read_by_lines(file_path):
+def get_most_common_non_ascii_char(
+        file_path: str, encoding='unicode-escape', errors='ignore'
+        ) -> str:
+    char_dict = defaultdict(int)
+    for line in read_by_lines(file_path, encoding, errors):
         new_line = list(filter(is_non_ascii, line))
-        counter_as_dict(new_line, char_dict)
+        for char in new_line:
+            char_dict[char] += 1
     return max(char_dict, key=char_dict.get)
 
 

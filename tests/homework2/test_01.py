@@ -1,17 +1,15 @@
 import os
 
-from homework_01.hw1 import (count_non_ascii_chars, count_punctuation_chars,
-                             get_longest_diverse_words,
-                             get_most_common_non_ascii_char, get_rarest_char)
+from homework2.hw1 import (count_non_ascii_chars, count_punctuation_chars,
+                           get_longest_diverse_words,
+                           get_most_common_non_ascii_char, get_rarest_char)
 
 
-def find(name, path):
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            return os.path.join(root, name)
+def find_tests(name):
+    return os.path.join(os.path.dirname(__file__), name)
 
 
-sample = find('par_1.txt', os.getcwd())
+sample = find_tests('par_1.txt')
 
 
 def test_get_longest_diverse_words():

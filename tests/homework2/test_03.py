@@ -1,4 +1,4 @@
-from homework_03.hw3 import lists_combinations
+from homework2.hw3 import lists_combinations
 
 
 def test_lists_combinations():

@@ -1,6 +1,6 @@
 import string
 
-from homework_05.hw5 import custom_range
+from homework2.hw5 import custom_range
 
 
 def test_custom_range():
