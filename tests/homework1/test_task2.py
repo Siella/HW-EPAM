@@ -1,4 +1,4 @@
-from homework_02.task02 import check_fib
+from homework1.task02 import check_fib
 
 
 def test_check_fib():
