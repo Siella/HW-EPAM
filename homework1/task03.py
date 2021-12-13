@@ -15,30 +15,23 @@ with open("some_file.txt") as fi:
 """
 
 
-class MinMaxTuple:
+class MinMaxStorage:
     __slots__ = ('min', 'max')
 
     def __init__(self):
-        self.min = -1
-        self.max = -1
+        self.min = None
+        self.max = None
 
 
-def find_maximum_and_minimum(file_name: str) -> MinMaxTuple:
-    first = True
-    values = MinMaxTuple()
+def find_maximum_and_minimum(file_name: str) -> MinMaxStorage:
+    values = MinMaxStorage()
     with open(file_name) as f:
         for line in f:
             curr_elem = int(line)
-            if first:
-                values.max = curr_elem
-                values.min = curr_elem
-                first = False
-                continue
+            if values.max is None:
+                values.max, values.min = curr_elem, curr_elem
             if curr_elem > values.max:
                 values.max = curr_elem
             if curr_elem < values.min:
                 values.min = curr_elem
-        if first:
-            print('An empty file!')
-            return values.min, values.max
     return values.min, values.max
