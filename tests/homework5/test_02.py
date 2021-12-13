@@ -1,4 +1,4 @@
-from task_02.save_original_info import custom_sum
+from homework5.save_original_info import custom_sum
 
 
 def test_save_func_info_decorator():

@@ -1,7 +1,7 @@
 import datetime as dt
 from unittest.mock import Mock
 
-from task_01.oop_1 import Homework, Student, Teacher
+from homework5.oop_1 import Homework, Student, Teacher
 
 
 class FakeHomework(Homework):
