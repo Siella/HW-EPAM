@@ -1,11 +1,9 @@
 from typing import Callable
 
-cache_dict = dict()
-
 
 def cache(times: int) -> Callable:
     def wrapped_cache(func: Callable) -> Callable:
-        global cache_dict
+        cache_dict = dict()
 
         def access_cache(*args, **kwargs):
             key = str((args, kwargs))

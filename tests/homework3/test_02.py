@@ -1,6 +1,6 @@
 import time
 
-from task02.task02 import parallel_slow_calculate
+from homework3.task02 import parallel_slow_calculate
 
 
 def test_parallel_slow_calculate():

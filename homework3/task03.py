@@ -1,5 +1,6 @@
 # I decided to write a code that generates data
 # filtering object from a list of keyword parameters:
+from functools import partial
 from typing import Callable, List
 
 
@@ -34,11 +35,9 @@ def make_filter(**keywords):
     """
     filter_funcs = []
     for key, value in keywords.items():
-        def keyword_filter_func(dict_):
-            if key not in dict_:
-                return False
-            return dict_[key] == value
-        filter_funcs.append(keyword_filter_func)
+        f = partial(lambda key_, value_, dict_:
+                    dict_.get(key_, '') == value_, key, value)
+        filter_funcs.append(f)
     return Filter(filter_funcs)
 
 
@@ -56,7 +55,8 @@ sample_data = [
         "name": "polly"
     },
     {
-        "name": "polly",  # no key "type"
+        "type": "bird",
+        "name": "not_polly",
     }
 ]
 

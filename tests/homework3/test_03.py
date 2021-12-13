@@ -1,4 +1,4 @@
-from task03.task03 import Filter, make_filter, sample_data
+from homework3.task03 import Filter, make_filter, sample_data
 
 
 def test_positive_even_numbers():
