@@ -22,8 +22,10 @@ from typing import Any, List, Sequence
 
 def custom_range(iter_object: Sequence[Any], *args) -> List[Any]:
     """
-    If given one argument in args, it will be considered as a stop element.
-    If given two or three arguments, then it'll be treated as start, stop[, step].
+    If given one argument in args, it will be considered
+    as a stop element.
+    If given two or three arguments, then it'll be treated
+    as start, stop[, step].
     :param iter_object: an iterable object to create range
     :param args: stop | start, stop[, step]
     :return:
