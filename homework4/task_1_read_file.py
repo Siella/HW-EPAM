@@ -31,16 +31,19 @@ You will learn:
 """
 
 
+class MyValueError(ValueError):
+    pass
+
+
 def read_magic_number(path: str) -> bool:
     try:
-        f = open(path)
-        s = f.readline()
-        num = float(s.strip())
-        f.close()
+        with open(path, 'r') as f:
+            s = f.readline()
+            num = float(s.strip())
     except OSError:
-        raise ValueError("Can't find or read a file")
+        raise MyValueError("Can't find or read a file")
     except ValueError:
-        raise ValueError("Can't convert data to a float")
+        raise MyValueError("Can't convert data to a float")
     except BaseException as err:
-        raise ValueError(f"Unexpected error {err}")
+        raise MyValueError(f"Unexpected error {err}")
     return 1 <= num < 3

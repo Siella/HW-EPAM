@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from task_02.task_2_mock_input import count_dots_on_i
+from homework4.task_2_mock_input import count_dots_on_i
 
 
 # Some stupid test

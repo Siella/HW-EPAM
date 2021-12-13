@@ -29,6 +29,10 @@ You will learn:
 import urllib.request
 
 
+class AnotherExceptions(Exception):
+    pass
+
+
 def count_dots_on_i(url: str) -> int:
     try:
         with urllib.request.urlopen(url) as f:
@@ -37,7 +41,7 @@ def count_dots_on_i(url: str) -> int:
     except ConnectionError:
         raise ValueError(f"Unreachable {url}")
     except Exception as ex:
-        print(f"{type(ex).__name__}, {ex.args}")
+        raise AnotherExceptions(f"{type(ex).__name__}, {ex.args}")
 
 
 if __name__ == '__main__':

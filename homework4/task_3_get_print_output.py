@@ -24,9 +24,8 @@ You will learn:
 import sys
 
 
-def my_precious_logger(text: str):
+def my_precious_logger(text: str) -> None:
     if text.startswith('error'):
         sys.stderr.write(text)
-        return
-    sys.stdout.write(text)
-    return
+    else:
+        sys.stdout.write(text)

@@ -1,4 +1,4 @@
-from task_03.task_3_get_print_output import my_precious_logger
+from homework4.task_3_get_print_output import my_precious_logger
 
 
 def test_stdout(capsys):
