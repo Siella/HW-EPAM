@@ -41,37 +41,86 @@ import datetime as dt
 
 
 class Homework:
+    """
+    Homework принимает текст задания и дедлайн на его выполнение.
+
+    :param text: текст задания
+    :type text: str
+    :param deadline: число дней на выполнение
+    :type deadline: int
+    :param created: точная дата и время создания
+    :type created: datetime.datetime
+    """
     def __init__(self, text: str, deadline: int):
         self.text = text
         self.deadline = dt.timedelta(deadline)
         self.created = dt.datetime.now()
 
     def is_active(self) -> bool:
-        return self.created + \
-               self.deadline - \
-               dt.datetime.now() > dt.timedelta(0)
+        """
+        Проверка актуальности ДЗ.
+
+        :return: Возвращает True, если ДЗ не просрочено,
+            иначе False.
+        :rtype: bool
+        """
+        now = dt.datetime.now()
+        return self.created + self.deadline - now > dt.timedelta(0)
 
 
 class Student:
+    """
+    Создаёт студента.
+
+    :param first_name: имя
+    :type first_name: str
+    :param last_name: фамилия
+    :type last_name: str
+    """
     def __init__(self, first_name: str, last_name: str):
         self.first_name = first_name
         self.last_name = last_name
 
     @staticmethod
     def do_homework(homework: Homework) -> Homework:
+        """
+        Выполение ДЗ.
+
+        :param homework: какое ДЗ выполняется
+        :type homework: Homework
+        :return: то же самое ДЗ, если оно не просрочено.
+        :rtype: Homework(, None)
+        """
         if homework.is_active():
             return homework
         print('You are late')
-        return
 
 
 class Teacher:
+    """
+    Создаёт учителя.
+
+    :param first_name: имя
+    :type first_name: str
+    :param last_name: фамилия
+    :type last_name: str
+    """
     def __init__(self, first_name: str, last_name: str):
         self.first_name = first_name
         self.last_name = last_name
 
     @staticmethod
     def create_homework(text: str, deadline: int) -> Homework:
+        """
+        Создаёт ДЗ.
+
+        :param text: тект задания
+        :type text: str
+        :param deadline: срок исполнения (в днях)
+        :type deadline: int
+        :return: ДЗ
+        :rtype: Homework
+        """
         return Homework(text, deadline)
 
 
