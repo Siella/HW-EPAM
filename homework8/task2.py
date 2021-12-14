@@ -1,47 +1,66 @@
 import sqlite3
 
 
+def connect(f):
+    def with_connection(self, *args, **kwargs):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            cursor = conn.cursor()
+            result = f(self, cursor, *args, **kwargs)
+        except ConnectionError:
+            raise ConnectionError
+        # падает на iter, потому что не читаю всё сразу
+        # finally:
+        #     conn.close()
+        return result
+    return with_connection
+
+
 class TableData:
+    """
+    Враппер для таблицы БД.
+
+    :param db_name: путь до БД
+    :type db_name: str
+    :param tb_name: название таблицы в БД
+    :type tb_name: str
+    """
+
     def __init__(self, db_name: str, tb_name: str):
-        self._con = sqlite3.connect(db_name)
-        self._cursor = self._con.cursor()
+        self.db_name = db_name
         self.table_name = tb_name
-        self.col_names = list(
-            map(
-                lambda x: x[0], self._cursor.execute(
-                    f"SELECT * from {self.table_name}").description
-            )
-        )
 
-    def __getitem__(self, index):
-        self._cursor.execute(
-            'SELECT * from presidents where name=:name', {'name': 'Yeltsin'}
-            # f"SELECT * from {self.table_name} WHERE name={index}"
+    @connect
+    def __getitem__(self, cursor, index):
+        cursor.execute(
+            f"SELECT * from {self.table_name} WHERE name=:name",
+            {'name': index}
         )
-        return self._cursor.fetchone()
+        return cursor.fetchone()
 
-    def __len__(self) -> int:
-        self._cursor.execute(
+    @connect
+    def __len__(self, cursor) -> int:
+        cursor.execute(
             f"SELECT COUNT(*) from {self.table_name}"
         )
-        return self._cursor.fetchall()[0][0]
+        return cursor.fetchall()[0][0]
 
-    def __iter__(self):
-        self._cursor.execute(
+    @connect
+    def __iter__(self, cursor):
+        col_names = list(
+            map(lambda x: x[0], cursor.execute(
+                f"SELECT * from {self.table_name}").description)
+        )
+        cursor.execute(
             f"SELECT * from {self.table_name}"
         )
-        while True:
-            try:
-                yield dict(
-                    zip(self.col_names, self._cursor.fetchone())
-                )
-            except TypeError:  # остановка на None
-                break
+        while row := cursor.fetchone():
+            yield dict(zip(col_names, row))
 
-    def __contains__(self, item):
-        for i in self.__iter__():
-            if i['name'] == item:
-                return True
+    @connect
+    def __contains__(self, cursor, item):
+        if self.__getitem__(item):
+            return True
         return False
 
 
