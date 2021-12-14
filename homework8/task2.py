@@ -9,9 +9,8 @@ def connect(f):
             result = f(self, cursor, *args, **kwargs)
         except ConnectionError:
             raise ConnectionError
-        # падает на iter, потому что не читаю всё сразу
-        # finally:
-        #     conn.close()
+        finally:
+            conn.close()
         return result
     return with_connection
 
@@ -29,33 +28,40 @@ class TableData:
     def __init__(self, db_name: str, tb_name: str):
         self.db_name = db_name
         self.table_name = tb_name
+        self._index = 1
 
     @connect
     def __getitem__(self, cursor, index):
         cursor.execute(
-            f"SELECT * from {self.table_name} WHERE name=:name",
-            {'name': index}
+            f"SELECT * FROM {self.table_name} WHERE name='{index}'"
         )
         return cursor.fetchone()
 
     @connect
     def __len__(self, cursor) -> int:
         cursor.execute(
-            f"SELECT COUNT(*) from {self.table_name}"
+            f"SELECT COUNT(*) FROM {self.table_name}"
         )
         return cursor.fetchall()[0][0]
 
     @connect
     def __iter__(self, cursor):
-        col_names = list(
+        self._cols = list(
             map(lambda x: x[0], cursor.execute(
-                f"SELECT * from {self.table_name}").description)
+                f"SELECT * FROM {self.table_name}").description)
         )
-        cursor.execute(
-            f"SELECT * from {self.table_name}"
-        )
-        while row := cursor.fetchone():
-            yield dict(zip(col_names, row))
+        return self
+
+    @connect
+    def __next__(self, cursor):
+        if self._index < self.__len__() + 1:
+            cursor.execute(
+                f"SELECT * FROM {self.table_name} WHERE rowid='{self._index}'"
+            )
+            self._index += 1
+            return dict(zip(self._cols, cursor.fetchone()))
+        else:
+            raise StopIteration
 
     @connect
     def __contains__(self, cursor, item):
