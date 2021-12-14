@@ -13,8 +13,20 @@ class AssignValueError(ValueError):
 
 
 class KeyValueStorage:
-    def __init__(self, file_path: str):
+    """
+    Контекстный менеджер для работы с парами key-value,
+    полученных из файла.
+
+    :param file_path: путь до файла
+    :type file_path: str
+    :param sep: разделитель пар
+    :type sep: str
+    :param storage: хранилище пар key-value
+    :type storage: defaultdict
+    """
+    def __init__(self, file_path: str, sep: str):
         self.file_path = file_path
+        self.sep = sep
         self.storage = defaultdict(str)
 
     def __enter__(self):
@@ -27,8 +39,15 @@ class KeyValueStorage:
             self.file_obj.close()
 
     def _parse_file(self):
-        for line in self.file_obj:
-            pair = KeyValuePair(*line.split('='))
+        """
+        Парсер текстового файла с обработкой разных ситуаций,
+        например, невозможность объявления/присвоения переменной
+        1=something.
+        """
+        text = self.file_obj.read()
+        items = [i for i in text.split(self.sep) if i]
+        for item in items:
+            pair = KeyValuePair(*item.split('='))
 
             key_pattern = re.compile('^[a-zA-Z_$][a-zA-Z_$0-9]*$')
             if not key_pattern.match(pair.key):
@@ -44,6 +63,6 @@ class KeyValueStorage:
 
 
 if __name__ == '__main__':
-    storage = KeyValueStorage('task1.txt')
+    storage = KeyValueStorage('task1.txt', '\n')
     with storage as s:
         print(s['name'])
