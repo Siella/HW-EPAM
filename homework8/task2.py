@@ -1,6 +1,14 @@
 import sqlite3
 
 
+class ValidationError(Exception):
+    pass
+
+
+class DataBaseConnectionError(Exception):
+    pass
+
+
 def connect(f):
     def with_connection(self, *args, **kwargs):
         try:
@@ -8,7 +16,7 @@ def connect(f):
             cursor = conn.cursor()
             result = f(self, cursor, *args, **kwargs)
         except ConnectionError:
-            raise ConnectionError
+            raise DataBaseConnectionError('Cannot connect to db!')
         finally:
             conn.close()
         return result
@@ -27,20 +35,23 @@ class TableData:
 
     def __init__(self, db_name: str, tb_name: str):
         self.db_name = db_name
+        if not tb_name.isalnum():
+            raise ValidationError('Table name is invalid!')
         self.table_name = tb_name
         self._index = 1
 
     @connect
     def __getitem__(self, cursor, index):
         cursor.execute(
-            f"SELECT * FROM {self.table_name} WHERE name='{index}'"
+            f'SELECT * FROM {self.table_name} WHERE name=:name',
+            {'name': index}
         )
         return cursor.fetchone()
 
     @connect
     def __len__(self, cursor) -> int:
         cursor.execute(
-            f"SELECT COUNT(*) FROM {self.table_name}"
+            f'SELECT COUNT(*) FROM {self.table_name}'
         )
         return cursor.fetchall()[0][0]
 
@@ -48,7 +59,7 @@ class TableData:
     def __iter__(self, cursor):
         self._cols = list(
             map(lambda x: x[0], cursor.execute(
-                f"SELECT * FROM {self.table_name}").description)
+                f'SELECT * FROM {self.table_name}').description)
         )
         return self
 
@@ -56,7 +67,8 @@ class TableData:
     def __next__(self, cursor):
         if self._index < self.__len__() + 1:
             cursor.execute(
-                f"SELECT * FROM {self.table_name} WHERE rowid='{self._index}'"
+                f'SELECT * FROM {self.table_name} WHERE rowid=:rowid',
+                {'rowid': self._index}
             )
             self._index += 1
             return dict(zip(self._cols, cursor.fetchone()))
