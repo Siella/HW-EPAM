@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 from collections import defaultdict
@@ -8,17 +9,41 @@ from scraper import TableScraper
 
 converter = Converter()
 
+t1 = time.time()
 scraper = TableScraper()
 scraper.load_table_data()
+t2 = time.time()
+print(f"It took {t2 - t1} seconds")
 
 parser = DataParser('table_scrapped.html')
 company_data = parser.parse_html_data()
-data = defaultdict(dict)
+companies = [
+    CompanyData(name, company_data[name]) for name in company_data
+]
 
-start_time = time.time()
-for name in company_data:
-    company = CompanyData(name, company_data[name])
-    data[name] = {
+asyncio.set_event_loop(asyncio.new_event_loop())
+
+
+async def get_data():
+    tasks = [
+        asyncio.create_task(
+            company.get_data_from_href()
+        ) for company in companies
+    ]
+
+    t1 = time.time()
+    await asyncio.gather(*tasks)
+    t2 = time.time()
+
+    print(f"It took {t2 - t1} seconds")
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_data())
+loop.close()
+
+data = defaultdict(dict)
+for company in companies:
+    data[company.name] = {
         'code': company.code,
         'price': converter.usd_to_rubles(company.price_usd),
         'P/E': company.pe_ratio,
@@ -26,7 +51,7 @@ for name in company_data:
         'potential profit':
             converter.usd_to_rubles(company.potential_profit),
     }
-print("--- %s seconds ---" % (time.time() - start_time))
+
 with open('all_companies_data.json', 'w') as json_file:
     json.dump(data, json_file)
 

@@ -1,10 +1,11 @@
+import asyncio
 import re
+import time
 from collections import defaultdict
 from typing import Dict
 
-import requests
+import aiohttp
 from bs4 import BeautifulSoup
-from request_util import retry
 
 URL = 'https://markets.businessinsider.com'
 HEADERS = {
@@ -61,9 +62,6 @@ class CompanyData:
         self._data = data
         self.get_data_from_dict()
         self.url = ''.join([URL, self._data['HRef']])
-        self.s = requests.Session()
-        self.s.headers.update(HEADERS)
-        self.get_data_from_href()
 
     def get_data_from_dict(self):
         try:
@@ -79,37 +77,57 @@ class CompanyData:
         except ValueError:
             self.uptake, self.drop = None, None
 
-    @retry(times=MAX_RETRIES)
-    def get_data_from_href(self, soup):
-        self.code = soup.find(
-            'span', {'class': 'price-section__category'}
-        ).text.strip().split(' , ')[-1]
+    async def get_data_from_href(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.url) as response:
+                await asyncio.sleep(0.01)
+                html = await response.text()
+                soup = BeautifulSoup(html, features='html.parser')
+                self.code = soup.find(
+                    'span', {'class': 'price-section__category'}
+                ).text.strip().split(' , ')[-1]
 
-        def find_value_by_tag_text(text):
-            try:
-                return float(
-                    re.search(
-                        r'[0-9]*[.][0-9]*',
-                        soup.find(
-                            'div', text=re.compile(text)
-                        ).parent.text
-                    ).group(0))
-            except (ValueError, AttributeError):
-                return None
+                def find_value_by_tag_text(text):
+                    try:
+                        return float(
+                            re.search(
+                                r'[0-9]*[.][0-9]*',
+                                soup.find(
+                                    'div', text=re.compile(text)
+                                ).parent.text
+                            ).group(0))
+                    except (ValueError, AttributeError):
+                        return None
 
-        self.pe_ratio = find_value_by_tag_text("P/E Ratio")
-        self.week_low = find_value_by_tag_text("52 Week Low")
-        self.week_high = find_value_by_tag_text("52 Week High")
+                self.pe_ratio = find_value_by_tag_text("P/E Ratio")
+                self.week_low = find_value_by_tag_text("52 Week Low")
+                self.week_high = find_value_by_tag_text("52 Week High")
 
-        try:
-            self.potential_profit = self.week_low - self.week_high
-        except (ValueError, TypeError):
-            self.potential_profit = None
+                try:
+                    self.potential_profit = self.week_low - self.week_high
+                except (ValueError, TypeError):
+                    self.potential_profit = None
 
 
 if __name__ == '__main__':
     parser = DataParser('table_scrapped.html')
     data = parser.parse_html_data()
-    company = CompanyData('3M', data['3M'])
-    print(company.week_low)
-    print(company.growth, company.price_usd)
+    companies = [CompanyData(name, data[name]) for name in data]
+
+    async def get_data():
+        tasks = [
+            asyncio.create_task(
+                company.get_data_from_href()
+            ) for company in companies
+        ]
+
+        t1 = time.time()
+        await asyncio.gather(*tasks)
+        t2 = time.time()
+
+        print(f"It took {t2 - t1} seconds")
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(get_data())
+    loop.close()
+    print(companies[-1].code, companies[-1].week_high)
