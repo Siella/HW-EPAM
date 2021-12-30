@@ -1,6 +1,7 @@
 import re
 
 import requests
+
 from homework10.request_util import retry
 
 URL = 'https://markets.businessinsider.com/index/components/s&p_500'

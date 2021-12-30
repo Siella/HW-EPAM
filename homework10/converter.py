@@ -1,6 +1,7 @@
 import re
 
 import requests
+
 from homework10.request_util import retry
 
 URL = 'https://www.cbr.ru/scripts/XML_daily.asp'
