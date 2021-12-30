@@ -17,6 +17,13 @@ MAX_RETRIES = 5
 
 
 class DataParser:
+    """
+    HTML file parser. Parses data loaded from
+    MARKETS INSIDER web-site (main table).
+
+    :param file_name: name of html file with data
+    :type file_name: str
+    """
     def __init__(self, file_name: str):
         self.file_name = file_name
 
@@ -32,6 +39,14 @@ class DataParser:
     pattern_hr = r'<ahref="|"title="[\w\W\d]*"?'
 
     def _parse_tag(self, tag):
+        """
+        Clears a tag from patterns such as span, br, td, a (href).
+
+        :param tag: tag with company info
+        :type tag: bs4.element.Tag
+        :return: cleared tag as string
+        :rtype: str
+        """
         new_tag = re.sub(
             f'\\s|{self.pattern_span}|{self.pattern_td}',
             '', str(tag), count=100
@@ -40,6 +55,13 @@ class DataParser:
         return re.sub(f'{self.pattern_br}', ' ', new_tag, count=100)
 
     def parse_html_data(self):
+        """
+        Parses main table data and writes obtained info
+        on companies into a dictionary.
+
+        :return: dictionary with companies data
+        :rtype: dict
+        """
         soup = self.read_html_data()
         headers = [re.sub('\\s', '', tag.text, count=20) for tag
                    in soup.thead.find_all('th')]
@@ -57,6 +79,16 @@ class DataParser:
 
 
 class CompanyData:
+    """
+    Parser of the main company info.
+
+    :param name: company name
+    :type name: str
+    :param _data: company all data
+    :type _data: dict
+    :param url: URL to company's page
+    :type url: str
+    """
     def __init__(self, name: str, data: Dict):
         self.name = name
         self._data = data
@@ -64,20 +96,34 @@ class CompanyData:
         self.url = ''.join([URL, self._data['HRef']])
 
     def get_data_from_dict(self):
+        """
+        Parses and gets company's price (in USD)
+        and 1-year growth from a given dictionary
+        with data.
+
+        :return: None
+        """
         try:
             self.price_usd = float(re.search(
                 r'[0-9]*[.][0-9]*',
                 self._data['LatestPricePreviousClose']
             ).group(0))
-        except ValueError:
+        except (ValueError, KeyError):
             self.price_usd = None
         try:
             _, self.growth = self._data['1Year+/-%'].split(' ')
             self.growth = float(self.growth[:-1])
-        except ValueError:
-            self.uptake, self.drop = None, None
+        except (ValueError, KeyError):
+            self.growth = None
 
     async def get_data_from_href(self):
+        """
+        Parses and gets extra company's info such as code,
+        P/E ratio, 52 week low/high, potential profit
+        from its web-page.
+
+        :return: None
+        """
         async with aiohttp.ClientSession() as session:
             async with session.get(self.url) as response:
                 await asyncio.sleep(0.01)

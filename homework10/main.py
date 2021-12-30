@@ -3,9 +3,9 @@ import json
 import time
 from collections import defaultdict
 
-from converter import Converter
-from my_parser import CompanyData, DataParser
-from scraper import TableScraper
+from homework10.converter import Converter
+from homework10.my_parser import CompanyData, DataParser
+from homework10.scraper import TableScraper
 
 converter = Converter()
 

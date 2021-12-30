@@ -1,7 +1,7 @@
 import re
 
 import requests
-from request_util import retry
+from homework10.request_util import retry
 
 URL = 'https://www.cbr.ru/scripts/XML_daily.asp'
 HEADERS = {
@@ -13,6 +13,15 @@ MAX_RETRIES = 5
 
 
 class Converter:
+    """
+    Class that gets currencies (USD) from CBR web-site
+    and converts it to rubles.
+
+    :param url: CBR web-site URL
+    :type url: str
+    :param s: requests session
+    :type s: requests.Session
+    """
     def __init__(self):
         self.url = URL
         self.s = requests.Session()
