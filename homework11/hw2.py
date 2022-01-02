@@ -39,12 +39,11 @@ class DiscountStrategy:
     :type strategy: str
     """
     def __init__(self, strategy: str):
+        self.discount = .0
         if strategy == 'morning':
             self.discount = .25
         elif strategy == 'evening':
             self.discount = .75
-        else:
-            self.discount = .0
 
 
 class Order:
