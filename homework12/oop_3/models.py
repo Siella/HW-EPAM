@@ -63,6 +63,14 @@ class Student(Person):
         return f"{self.last_name}"
 
     def do_homework(self, hw_id: int, solution: str):
+        """
+        Выполение ДЗ и запись результата в таблицу solutions.
+
+        :param hw_id: id ДЗ из таблицы homeworks, которое выполняется
+        :type hw_id: int
+        :param solution: решение ДЗ
+        :type solution: str
+        """
         if not Homework.objects.get(id=hw_id).is_active():
             raise DeadlineError('You are late')
         HomeworkResult.objects.create(
@@ -81,11 +89,28 @@ class Teacher(Person):
 
     @staticmethod
     def create_homework(text: str, deadline: dt.datetime):
+        """
+        Создаёт ДЗ в таблице homeworks.
+
+        :param text: тект задания
+        :type text: str
+        :param deadline: срок исполнения
+        :type deadline: dt.datetime
+        """
         Homework.objects.create(
             text=text, deadline=deadline, created=timezone.now()
         )
 
     def check_homework(self, hw_id: int, st_id: int):
+        """
+        Проверка результата выполения ДЗ студентом. Отмечает проверенную
+        работу (при успешном выполнении) в отаблице solutions.
+
+        :param hw_id: id ДЗ
+        :type hw_id: int
+        :param st_id: id студента, выполневшего ДЗ
+        :type st_id: int
+        """
         hw = HomeworkResult.objects.filter(
             homework_id=hw_id, solver_id=st_id
         ).latest('id')
@@ -96,6 +121,14 @@ class Teacher(Person):
 
     @staticmethod
     def reset_results(hw_id: int = None):
+        """
+        Если передать id ДЗ, то удаляет только результаты
+        этого задания из таблицы solutions.
+        Если ничего не передавать, то полностью обнулит solutions.
+
+        :param hw_id: id ДЗ
+        :type hw_id: int
+        """
         hw = HomeworkResult.objects.all()
         if hw_id is not None:
             hw = HomeworkResult.objects.filter(homework_id=hw_id)
