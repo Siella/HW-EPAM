@@ -20,7 +20,7 @@ def test_db_population():
 
     s.do_homework(1, 'TEST try')
     t.check_homework(1, 1)
-    assert HomeworkResult.objects.all().count() == 1
+    assert HomeworkResult.objects.filter(checked=1).count() == 1
 
     t.reset_results(hw_id=1)
     assert HomeworkResult.objects.all().count() == 0
