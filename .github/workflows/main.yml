@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions1111
-
 name: CI
 
 on: push
@@ -8,11 +6,14 @@ jobs:
   code_quality:
     runs-on: ubuntu-latest
     name: Checks with black, isort and possibly run tests
-    container: python:3.9
+    container: python:3.8
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
       - name: Run script
         run: |
           pip install flake8 isort pytest pytest-django pytest-pythonpath
@@ -20,4 +21,4 @@ jobs:
           ls -la
           flake8 --filename=[models.py,populate_db.py] .
           isort --skip populate_db.py --check .
-          py.test tests
+          py.test -p no:warnings tests
