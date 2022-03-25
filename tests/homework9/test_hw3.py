@@ -16,10 +16,10 @@ content = [
 def create_test_files():
     file_list = []
     for i, cont in enumerate(content):
-        with open(f"test_{i}.txt", "w+") as f:
+        with open(f"tests/homework9/test_{i}.txt", "w+") as f:
             f.write(cont)
-        file_list.append(f"test_{i}.txt")
-    yield Path.cwd()
+        file_list.append(f"tests/homework9/test_{i}.txt")
+    yield Path.cwd() / "tests/homework9/"
     for f in file_list:
         os.remove(f)
 
