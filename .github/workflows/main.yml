@@ -16,9 +16,9 @@ jobs:
           pip install -r requirements.txt
       - name: Run script
         run: |
-          pip install flake8 isort pytest
+          pip install flake8 isort pytest pytest-django pytest-pythonpath
           pip install -r requirements.txt
           ls -la
-          flake8 .
-          isort --check .
+          flake8 --filename=[models.py,populate_db.py] .
+          isort --skip populate_db.py --check .
           py.test -p no:warnings tests
